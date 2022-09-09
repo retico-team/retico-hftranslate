@@ -61,7 +61,6 @@ class HFTranslateModule(retico_core.AbstractModule):
 
         self._latest_text = ""
         self._latest_translation = ""
-        self.current_output_ius = []
         self.latest_input_iu = None
 
     def setup(self):
@@ -71,83 +70,33 @@ class HFTranslateModule(retico_core.AbstractModule):
         self.hftranslator = None
 
     def current_text(self):
-        txt = []
-        for iu in self.current_ius:
-            txt.append(iu.text)
-        return " ".join(txt)
-
-    def clean_pipeline(self):
-        self.current_ius = []
-        self.current_output_ius = []
-        self._latest_translation = ""
-        self._latest_text = ""
+        return " ".join([iu.text for iu in self.current_input])
 
     def process_update(self, update_message):
-        final = False
         for iu, ut in update_message:
             if ut == retico_core.UpdateType.ADD:
-                self.current_ius.append(iu)
+                self.current_input.append(iu)
                 self.latest_input_iu = iu
-                final = final or iu.committed
             elif ut == retico_core.UpdateType.REVOKE:
                 self.revoke(iu)
+            elif ut == retico_core.UpdateType.COMMIT:
+                self.commit(iu)
 
         current_text = self.current_text()
-        if final or current_text != self._latest_text:
-            current_translation = self.hftranslator.translate(current_text)
-            if current_translation == self._latest_translation:
-                if final:
-                    output_iu = self.create_iu(self.latest_input_iu)
-                    output_iu.committed = True
-                    output_iu.text = ""
-                    self.clean_pipeline()
-                    return retico_core.UpdateMessage.from_iu(
-                        output_iu, retico_core.UpdateType.ADD
-                    )
-                return None
+        current_translation = self.hftranslator.translate(current_text)
 
-            self._latest_translation = current_translation
-            self._latest_text = current_text
+        um, new_tokens = retico_core.text.get_text_increment(self, current_translation)
+        for token in new_tokens:
+            output_iu = self.create_iu(self.latest_input_iu)
+            output_iu.text = token
+            self.current_output.append(output_iu)
+            um.add_iu(output_iu, retico_core.UpdateType.ADD)
 
-            um, new_tokens = self.get_increment(current_translation)
-            for token in new_tokens:
-                output_iu = self.create_iu(self.latest_input_iu)
-                output_iu.text = token
-                output_iu.committed = final
-                self.current_output_ius.append(output_iu)
-                um.add_iu(output_iu, retico_core.UpdateType.ADD)
+        if self.input_committed():
+            for iu in self.current_output:
+                self.commit(iu)
+                um.add_iu(iu, retico_core.UpdateType.COMMIT)
+            self.current_input = []
+            self.current_output = []
 
-            if final:
-                self.clean_pipeline()
-
-            return um
-
-    def get_increment(self, new_text):
-        """Compares the full text given by the asr with the IUs that are already
-        produced and returns only the increment from the last update. It revokes all
-        previously produced IUs that do not match."""
-        um = retico_core.UpdateMessage()
-        tokens = new_text.strip().split(" ")
-        if tokens == [""]:
-            return um, []
-
-        new_tokens = []
-        iu_idx = 0
-        token_idx = 0
-        while token_idx < len(tokens):
-            if iu_idx >= len(self.current_output_ius):
-                new_tokens.append(tokens[token_idx])
-                token_idx += 1
-            else:
-                current_iu = self.current_output_ius[iu_idx]
-                iu_idx += 1
-                if tokens[token_idx] == current_iu.text:
-                    token_idx += 1
-                else:
-                    current_iu.revoked = True
-                    um.add_iu(current_iu, retico_core.UpdateType.REVOKE)
-        self.current_output_ius = [
-            iu for iu in self.current_output_ius if not iu.revoked
-        ]
-
-        return um, new_tokens
+        return um
