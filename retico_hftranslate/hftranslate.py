@@ -10,13 +10,16 @@ class HFTranslate:
 
     TRANSLATION_MAP = {
         "en_fr": "Helsinki-NLP/opus-mt-en-fr",
-        "fr_en": "Helsinki-NLP/opus-mt-fr-en",
         "en_de": "Helsinki-NLP/opus-mt-en-de",
-        "de_en": "Helsinki-NLP/opus-mt-de-en",
-        "es_en": "Helsinki-NLP/opus-mt-es-en",
         "en_es": "Helsinki-NLP/opus-mt-en-es",
+        "fr_en": "Helsinki-NLP/opus-mt-fr-en",
         "fr_de": "Helsinki-NLP/opus-mt-fr-de",
+        "fr_es": "Helsinki-NLP/opus-mt-fr-es",
+        "de_en": "Helsinki-NLP/opus-mt-de-en",
         "de_fr": "Helsinki-NLP/opus-mt-de-fr",
+        "es_en": "Helsinki-NLP/opus-mt-es-en",
+        "es_fr": "Helsinki-NLP/opus-mt-es-fr",
+        "es_de": "Helsinki-NLP/opus-mt-es-de",
     }
 
     def __init__(self, from_lang="en", to_lang="de"):
