@@ -1,5 +1,25 @@
 # retico-hftranslate
-Local translation module based on the hugging face transformer library.
+
+A local translation module based on the hugging face transformer library within the ReTico framework.
+
+## Installation and Requirements
+
+* Install retico_core:
+```pip install git+https://github.com/retico-team/retico-core.git```
+* Install the retico-hftranslate:
+```pip install git+https://github.com/retico-team/retico-hftranslate.git```
+
+## Modules
+
+### `HFTranslateModule`
+Incrementally translate text from one language to another using HuggingFace's pipeline with Helsinki-NLP models.
+
+**Language options:** `en (English)`, `fr (French)`, `de (German)`, `es (Spanish)`
+
+#### Arguments:
+* `from_lang` (str): Source language to use, defaults to 'en'
+* `to_lang` (str): Target language to use, defaults to 'de'
+
 
 ## Example
 
