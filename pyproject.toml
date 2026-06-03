@@ -13,7 +13,7 @@ dependencies = [
 authors = [
     {name = "Thilo Michael", email= "uhlomuhlo@gmail.com"},
 ]
-python_requires = ">=3.6, <4"
+requires-python = ">=3.6, <4"
 description = "Local translation module based on the hugging face transformer"
 readme = "README.md"
 license = { file = "LICENSE" }
