@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm[simple]>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "retico-hftranslate"
+dynamic = ["version"]
+dependencies = [
+    "retico-core>=2.0.0",
+    "transformers~=4.21",
+    "torch~=1.12",
+]
+authors = [
+    {name = "Thilo Michael", email= "uhlomuhlo@gmail.com"},
+]
+python_requires = ">=3.6, <4"
+description = "Local translation module based on the hugging face transformer"
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = [
+    "retico",
+    "framework",
+    "incremental",
+    "dialogue",
+    "dialog",
+    "translation",
+    "interpretation"
+]
+classifiers = [
+        "Development Status :: 2 - Pre-Alpha",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: Apache Software License",
+    ]
