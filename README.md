@@ -3,9 +3,11 @@
 A local translation module based on the hugging face transformer library within the ReTico framework.
 
 ## Installation and Requirements
-
+To use the translation module you first need to install the retico-core package:
 * Install retico_core:
 ```pip install git+https://github.com/retico-team/retico-core.git```
+
+Right after that, install the hftranslate package:
 * Install the retico-hftranslate:
 ```pip install git+https://github.com/retico-team/retico-hftranslate.git```
 
